@@ -37,6 +37,8 @@ class UrlInputSection extends StatelessWidget {
                       fontFamily: 'monospace',
                       fontSize: 14,
                     ),
+                    onTapOutside: (event) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
                     decoration: InputDecoration(
                       hintText: 'Nhập URL stream...',
                       filled: true,
