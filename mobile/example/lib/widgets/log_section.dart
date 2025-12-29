@@ -6,11 +6,7 @@ class LogSection extends StatelessWidget {
   final List<String> logs;
   final VoidCallback onClear;
 
-  const LogSection({
-    super.key,
-    required this.logs,
-    required this.onClear,
-  });
+  const LogSection({super.key, required this.logs, required this.onClear});
 
   @override
   Widget build(BuildContext context) {

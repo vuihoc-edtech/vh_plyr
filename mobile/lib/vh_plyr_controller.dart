@@ -122,7 +122,7 @@ class VhPlyrController extends ChangeNotifier {
 
       // Emit event
       _eventController.add(event);
-      
+
       // Only notify listeners for state-changing events
       if (shouldNotify) {
         notifyListeners();

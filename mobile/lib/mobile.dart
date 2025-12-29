@@ -35,4 +35,7 @@ library;
 
 export 'vh_plyr.dart';
 export 'vh_plyr_controller.dart';
+export 'vh_plyr_manager.dart';
+export 'vh_plyr_overlay.dart';
 export 'vh_plyr_state.dart';
+export 'vh_plyr_visibility_wrapper.dart';

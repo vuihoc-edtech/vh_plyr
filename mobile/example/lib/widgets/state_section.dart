@@ -48,8 +48,8 @@ class StateSection extends StatelessWidget {
                         value: state.isPlaying
                             ? '▶️'
                             : state.isPaused
-                                ? '⏸️'
-                                : '---',
+                            ? '⏸️'
+                            : '---',
                         label: 'Trạng thái',
                       ),
                     ),

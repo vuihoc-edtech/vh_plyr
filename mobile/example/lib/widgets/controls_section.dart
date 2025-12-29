@@ -5,10 +5,7 @@ import 'common.dart';
 class ControlsSection extends StatelessWidget {
   final void Function(String action, [List<dynamic>? args]) onAction;
 
-  const ControlsSection({
-    super.key,
-    required this.onAction,
-  });
+  const ControlsSection({super.key, required this.onAction});
 
   @override
   Widget build(BuildContext context) {

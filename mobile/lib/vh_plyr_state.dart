@@ -336,6 +336,48 @@ class VhPlyrOptions {
          debug: debug,
        );
 
+  /// Factory for preview mode - muted, autoplay, no controls
+  ///
+  /// Use this for small preview players that should play silently.
+  /// Perfect for live lesson previews in a list/calendar.
+  const VhPlyrOptions.preview({
+    bool useLocalAssets = false,
+    String playerUrl = 'https://vuihoc-edtech.github.io/vh_plyr/',
+    String? initialSource,
+    bool debug = false,
+  }) : this(
+         useLocalAssets: useLocalAssets,
+         playerUrl: playerUrl,
+         initialSource: initialSource,
+         autoplay: true,
+         controls: false,
+         fullscreen: false,
+         volume: 0.0,
+         muted: true,
+         debug: debug,
+       );
+
+  /// Factory for full mode - unmuted, with controls, fullscreen enabled
+  ///
+  /// Use this for the main viewing experience.
+  const VhPlyrOptions.fullMode({
+    bool useLocalAssets = false,
+    String playerUrl = 'https://vuihoc-edtech.github.io/vh_plyr/',
+    String? initialSource,
+    bool autoplay = true,
+    bool debug = false,
+  }) : this(
+         useLocalAssets: useLocalAssets,
+         playerUrl: playerUrl,
+         initialSource: initialSource,
+         autoplay: autoplay,
+         controls: true,
+         fullscreen: true,
+         volume: 1.0,
+         muted: false,
+         debug: debug,
+       );
+
   /// Build the full URL with query parameters (for remote mode)
   String buildRemoteUrl() {
     final uri = Uri.parse(playerUrl);

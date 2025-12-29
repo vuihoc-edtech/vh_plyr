@@ -70,7 +70,7 @@ class VhPlyr extends StatefulWidget {
 class _VhPlyrState extends State<VhPlyr> {
   bool _isLoading = true;
   String? _error;
-  
+
   // Stream subscriptions to cancel on dispose
   StreamSubscription<VhPlyrEvent>? _readySubscription;
   StreamSubscription<String>? _errorSubscription;
@@ -174,7 +174,7 @@ class _VhPlyrState extends State<VhPlyr> {
             displayZoomControls: false,
           ),
           onConsoleMessage: (controller, consoleMessage) {
-            print(consoleMessage);
+            debugPrint('[VhPlyr WebView] $consoleMessage');
           },
           onWebViewCreated: (controller) {
             widget.controller.attach(controller);
@@ -226,7 +226,7 @@ class _VhPlyrState extends State<VhPlyr> {
                   widget.placeholder ??
                   const CircularProgressIndicator(
                     color: Colors.deepOrange,
-                    strokeWidth: 3
+                    strokeWidth: 3,
                   ),
             ),
           ),

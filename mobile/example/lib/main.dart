@@ -2,12 +2,16 @@ import 'package:example/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import 'demo_page.dart';
+import 'home_screen.dart';
+
+// Route observer for visibility tracking
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
-  
+
   runApp(const VhPlyrDemoApp());
 }
 
@@ -19,7 +23,8 @@ class VhPlyrDemoApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: const DemoPage(),
+      home: const HomeScreen(),
+      navigatorObservers: [routeObserver],
     );
   }
 }
