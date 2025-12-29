@@ -1,122 +1,201 @@
+import 'package:example/widgets/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/vh_plyr.dart';
+import 'package:mobile/vh_plyr_controller.dart';
+import 'package:mobile/vh_plyr_state.dart';
+
+import 'widgets/widgets.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const VhPlyrDemoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class VhPlyrDemoApp extends StatelessWidget {
+  const VhPlyrDemoApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'VhPlyr Demo',
+      debugShowCheckedModeBanner: false,
+      theme: theme,
+      home: const DemoPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class DemoPage extends StatefulWidget {
+  const DemoPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DemoPage> createState() => _DemoPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _DemoPageState extends State<DemoPage> {
+  final VhPlyrController _controller = VhPlyrController();
+  final TextEditingController _urlController = TextEditingController(
+    text: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  );
+  final List<String> _logs = ['[VhPlyr Demo] Ready'];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+    _setupListeners();
+  }
+
+  void _setupListeners() {
+    _controller.onReady.listen((_) {
+      _log('Player ready', isInfo: true);
     });
+
+    _controller.onError.listen((error) {
+      _log('Error: $error', isError: true);
+    });
+
+    _controller.onPlay.listen((_) => _log('▶️ Playing'));
+    _controller.onPause.listen((_) => _log('⏸️ Paused'));
+    _controller.onEnded.listen((_) => _log('⏹️ Ended'));
+    _controller.onSeeking.listen((_) => _log('🔍 Seeking...'));
+    _controller.onSeeked.listen((_) => _log('✅ Seeked'));
+  }
+
+  void _log(String message, {bool isInfo = false, bool isError = false}) {
+    final time = TimeOfDay.now().format(context);
+    setState(() {
+      _logs.add('[$time] $message');
+      if (_logs.length > 50) _logs.removeAt(0);
+    });
+  }
+
+  Future<void> _executeAction(String action, [List<dynamic>? args]) async {
+    _log('→ $action(${args?.join(', ') ?? ''})');
+
+    switch (action) {
+      case 'play':
+        await _controller.play();
+      case 'pause':
+        await _controller.pause();
+      case 'stop':
+        await _controller.stop();
+      case 'rewind':
+        await _controller.rewind(args?[0]?.toDouble() ?? 10);
+      case 'forward':
+        await _controller.forward(args?[0]?.toDouble() ?? 10);
+      case 'toggleFullscreen':
+        await _controller.toggleFullscreen();
+      case 'setVolume':
+        await _controller.setVolume(args?[0]?.toDouble() ?? 0.5);
+      case 'setMuted':
+        await _controller.setMuted(args?[0] ?? true);
+      case 'getState':
+        final state = await _controller.getState();
+        _log(
+          '← State: ${state.isPlaying ? "playing" : "paused"}, '
+          '${_formatTime(state.currentTime)}/${_formatTime(state.duration)}',
+        );
+    }
+  }
+
+  String _formatTime(double seconds) {
+    final mins = (seconds / 60).floor();
+    final secs = (seconds % 60).floor();
+    return '$mins:${secs.toString().padLeft(2, '0')}';
+  }
+
+  void _loadUrl() {
+    final url = _urlController.text.trim();
+    if (url.isEmpty) return;
+    _log(
+      'Loading: ${url.substring(0, url.length.clamp(0, 40))}...',
+      isInfo: true,
+    );
+    _controller.loadSource(url, autoplay: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _urlController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(8),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Player
+            _buildPlayerSection(),
+            const SizedBox(height: 16),
+
+            // URL Input
+            UrlInputSection(controller: _urlController, onLoad: _loadUrl),
+            const SizedBox(height: 16),
+
+            // Controls
+            ControlsSection(onAction: _executeAction),
+            const SizedBox(height: 16),
+
+            // State Display
+            StateSection(controller: _controller, formatTime: _formatTime),
+            const SizedBox(height: 16),
+
+            // Console Log
+            LogSection(
+              logs: _logs,
+              onClear: () => setState(() {
+                _logs.clear();
+                _logs.add('[VhPlyr] Cleared');
+              }),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Row(
+        children: [
+          Image.network(
+            'https://xcdn-cf.vuihoc.vn/theme/vuihoc/imgs/vuihoc_logo_final.png',
+            height: 32,
+            errorBuilder: (_, __, ___) => const Icon(Icons.play_circle),
+          ),
+        ],
+      ),
+      actions: const [LiveBadge()],
+    );
+  }
+
+  Widget _buildPlayerSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: VhPlyr(
+          controller: _controller,
+          options: VhPlyrOptions(
+            initialSource: _urlController.text,
+            autoplay: false,
+          ),
+          onReady: () {
+            _log('🎬 Player initialized', isInfo: true);
+          },
+          onError: (error) {
+            _log('❌ $error', isError: true);
+          },
+        ),
+      ),
     );
   }
 }

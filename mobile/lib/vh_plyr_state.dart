@@ -267,7 +267,7 @@ class VhPlyrOptions {
 
   /// Base URL where the web player is hosted (only used when `useLocalAssets` is false)
   ///
-  /// Default: 'https://cdn.vuihoc.vn/player/index.html'
+  /// Default: 'https://vuihoc-edtech.github.io/vh_plyr/'
   final String playerUrl;
 
   /// Initial source URL (HLS m3u8 or direct video)
@@ -290,7 +290,7 @@ class VhPlyrOptions {
 
   const VhPlyrOptions({
     this.useLocalAssets = false,
-    this.playerUrl = 'https://cdn.vuihoc.vn/player/index.html',
+    this.playerUrl = 'https://vuihoc-edtech.github.io/vh_plyr/',
     this.initialSource,
     this.autoplay = false,
     this.controls = true,

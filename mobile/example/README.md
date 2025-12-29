@@ -1,16 +1,33 @@
-# example
+# VhPlyr Mobile Demo
 
-A new Flutter project.
+Demo app cho VhPlyr - tương tự phiên bản web `demo.html`.
 
-## Getting Started
+## Tính năng
 
-This project is a starting point for a Flutter application.
+- 🎬 **Video Player** - Phát HLS streams qua WebView
+- 🎛️ **Điều khiển đầy đủ** - Play, Pause, Stop, Seek, Volume, Mute, Fullscreen
+- 📊 **Hiển thị trạng thái** - Thời gian hiện tại, tổng thời lượng, trạng thái player
+- 🔗 **URL Input** - Nhập URL stream HLS (m3u8) tuỳ ý
+- 📝 **Console Log** - Xem các event và action trong thời gian thực
 
-A few resources to get you started if this is your first Flutter project:
+## Chạy Demo
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+cd mobile/example
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
+
+| Feature       | Description                               |
+| ------------- | ----------------------------------------- |
+| Player        | Phát video HLS qua Plyr.io trong WebView  |
+| Controls      | Các nút điều khiển tương tự demo.html     |
+| State Display | Hiển thị thời gian và trạng thái realtime |
+| Console       | Log các action và event                   |
+
+## Tham khảo
+
+- [demo.html](../../demo.html) - Phiên bản Web demo
+- [VhPlyr API](../../docs/web-api.md) - Tài liệu API
