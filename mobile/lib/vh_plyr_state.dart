@@ -288,6 +288,9 @@ class VhPlyrOptions {
   /// Initial muted state
   final bool muted;
 
+  /// Enable debug mode
+  final bool debug;
+
   const VhPlyrOptions({
     this.useLocalAssets = false,
     this.playerUrl = 'https://vuihoc-edtech.github.io/vh_plyr/',
@@ -297,6 +300,7 @@ class VhPlyrOptions {
     this.fullscreen = true,
     this.volume = 1.0,
     this.muted = false,
+    this.debug = false,
   });
 
   /// Factory for remote URL mode
@@ -308,6 +312,7 @@ class VhPlyrOptions {
     bool fullscreen,
     double volume,
     bool muted,
+    bool debug,
   }) = VhPlyrOptions;
 
   /// Factory for local assets mode
@@ -318,6 +323,7 @@ class VhPlyrOptions {
     bool fullscreen = true,
     double volume = 1.0,
     bool muted = false,
+    bool debug = false,
   }) : this(
          useLocalAssets: true,
          playerUrl: '',
@@ -327,6 +333,7 @@ class VhPlyrOptions {
          fullscreen: fullscreen,
          volume: volume,
          muted: muted,
+         debug: debug,
        );
 
   /// Build the full URL with query parameters (for remote mode)
@@ -339,6 +346,9 @@ class VhPlyrOptions {
     }
     if (autoplay) {
       params['autoplay'] = 'true';
+    }
+    if (debug) {
+      params['debug'] = 'true';
     }
 
     return uri

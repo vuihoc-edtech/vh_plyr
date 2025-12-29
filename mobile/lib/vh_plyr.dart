@@ -1,5 +1,6 @@
-/// VhPlyr - Main Widget
 library;
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -69,6 +70,13 @@ class VhPlyr extends StatefulWidget {
 class _VhPlyrState extends State<VhPlyr> {
   bool _isLoading = true;
   String? _error;
+  
+  // Stream subscriptions to cancel on dispose
+  StreamSubscription<VhPlyrEvent>? _readySubscription;
+  StreamSubscription<String>? _errorSubscription;
+
+  // Timer for auto-dismissing temporary errors
+  Timer? _errorDismissTimer;
 
   @override
   void initState() {
@@ -77,19 +85,46 @@ class _VhPlyrState extends State<VhPlyr> {
   }
 
   void _setupListeners() {
-    widget.controller.onReady.first.then((_) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        widget.onReady?.call();
-      }
-    });
+    _readySubscription = widget.controller.onReady.take(1).listen(_onReady);
+    _errorSubscription = widget.controller.onError.listen(_onError);
+  }
 
-    widget.controller.onError.listen((error) {
-      if (mounted) {
+  void _onReady(_) {
+    if (mounted) {
+      setState(() => _isLoading = false);
+      widget.onReady?.call();
+    }
+  }
+
+  void _onError(error) {
+    if (mounted) {
+      // Ignore temporary network errors that HLS.js auto-recovers from
+      if (_isRecoverableError(error)) {
+        // Show error briefly then auto-dismiss
         setState(() => _error = error);
-        widget.onError?.call(error);
+        _errorDismissTimer?.cancel();
+        _errorDismissTimer = Timer(const Duration(seconds: 3), () {
+          if (mounted && _error == error) {
+            setState(() => _error = null);
+          }
+        });
+      } else {
+        // Fatal error - show permanently until retry
+        setState(() => _error = error);
       }
-    });
+      widget.onError?.call(error);
+    }
+  }
+
+  /// Check if error is temporary and HLS.js can auto-recover
+  bool _isRecoverableError(String error) {
+    final recoverable = [
+      'net::ERR_FAILED',
+      'Network error',
+      'Media error',
+      'BUFFER_STALLED',
+    ];
+    return recoverable.any((e) => error.contains(e));
   }
 
   @override
@@ -138,6 +173,9 @@ class _VhPlyrState extends State<VhPlyr> {
             builtInZoomControls: false,
             displayZoomControls: false,
           ),
+          onConsoleMessage: (controller, consoleMessage) {
+            print(consoleMessage);
+          },
           onWebViewCreated: (controller) {
             widget.controller.attach(controller);
           },
@@ -158,6 +196,16 @@ class _VhPlyrState extends State<VhPlyr> {
             // Player ready event will set _isLoading to false
           },
           onReceivedError: (controller, request, error) {
+            // Ignore recoverable errors that HLS.js can auto-handle
+            // (e.g., segment loading failures, network hiccups)
+            if (_isRecoverableError(error.description)) {
+              debugPrint(
+                '[VhPlyr] Ignoring recoverable error: ${error.description}',
+              );
+              return;
+            }
+
+            // Only show error overlay for fatal errors (like initial page load failure)
             setState(() {
               _error = error.description;
               _isLoading = false;
@@ -177,8 +225,8 @@ class _VhPlyrState extends State<VhPlyr> {
               child:
                   widget.placeholder ??
                   const CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
+                    color: Colors.deepOrange,
+                    strokeWidth: 3
                   ),
             ),
           ),
@@ -230,6 +278,9 @@ class _VhPlyrState extends State<VhPlyr> {
 
   @override
   void dispose() {
+    _errorDismissTimer?.cancel();
+    _readySubscription?.cancel();
+    _errorSubscription?.cancel();
     widget.controller.detach();
     super.dispose();
   }

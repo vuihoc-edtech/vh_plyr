@@ -24,6 +24,11 @@ class VhPlyrController extends ChangeNotifier {
   final _eventController = StreamController<VhPlyrEvent>.broadcast();
   final _errorController = StreamController<String>.broadcast();
 
+  // Throttling for time-sensitive events
+  DateTime _lastTimeUpdate = DateTime.now();
+  DateTime _lastProgressUpdate = DateTime.now();
+  static const _throttleDuration = Duration(milliseconds: 500);
+
   /// Current player state
   VhPlyrState get state => _state;
 
@@ -98,18 +103,37 @@ class VhPlyrController extends ChangeNotifier {
           : data as Map<String, dynamic>;
       final event = VhPlyrEvent.fromJson(json);
 
+      // Throttle high-frequency events
+      final now = DateTime.now();
+      if (event.type == VhPlyrEventType.timeUpdate) {
+        if (now.difference(_lastTimeUpdate) < _throttleDuration) {
+          return; // Skip throttled event
+        }
+        _lastTimeUpdate = now;
+      } else if (event.type == VhPlyrEventType.progress) {
+        if (now.difference(_lastProgressUpdate) < _throttleDuration) {
+          return; // Skip throttled event
+        }
+        _lastProgressUpdate = now;
+      }
+
       // Update state based on event
-      _updateStateFromEvent(event);
+      final shouldNotify = _updateStateFromEvent(event);
 
       // Emit event
       _eventController.add(event);
-      notifyListeners();
+      
+      // Only notify listeners for state-changing events
+      if (shouldNotify) {
+        notifyListeners();
+      }
     } catch (e) {
       debugPrint('VhPlyrController: Error parsing event: $e');
     }
   }
 
-  void _updateStateFromEvent(VhPlyrEvent event) {
+  /// Updates state from event and returns true if listeners should be notified
+  bool _updateStateFromEvent(VhPlyrEvent event) {
     switch (event.type) {
       case VhPlyrEventType.ready:
         _state = _state.copyWith(
@@ -117,7 +141,7 @@ class VhPlyrController extends ChangeNotifier {
           duration: (event.data['duration'] ?? 0).toDouble(),
           isLive: event.data['isLive'] ?? false,
         );
-        break;
+        return true;
 
       case VhPlyrEventType.play:
         _state = _state.copyWith(
@@ -125,11 +149,11 @@ class VhPlyrController extends ChangeNotifier {
           isPaused: false,
           isStopped: false,
         );
-        break;
+        return true;
 
       case VhPlyrEventType.pause:
         _state = _state.copyWith(isPlaying: false, isPaused: true);
-        break;
+        return true;
 
       case VhPlyrEventType.ended:
         _state = _state.copyWith(
@@ -137,49 +161,49 @@ class VhPlyrController extends ChangeNotifier {
           isPaused: true,
           isEnded: true,
         );
-        break;
+        return true;
 
       case VhPlyrEventType.timeUpdate:
         _state = _state.copyWith(
           currentTime: (event.data['currentTime'] ?? 0).toDouble(),
           duration: (event.data['duration'] ?? _state.duration).toDouble(),
         );
-        break;
+        return true; // Already throttled above
 
       case VhPlyrEventType.progress:
         _state = _state.copyWith(
           buffered: (event.data['buffered'] ?? 0).toDouble(),
         );
-        break;
+        return false; // Don't notify for buffered updates
 
       case VhPlyrEventType.seeking:
         _state = _state.copyWith(isSeeking: true);
-        break;
+        return true;
 
       case VhPlyrEventType.seeked:
         _state = _state.copyWith(isSeeking: false);
-        break;
+        return true;
 
       case VhPlyrEventType.volumeChange:
         _state = _state.copyWith(
           volume: (event.data['volume'] ?? 1).toDouble(),
           muted: event.data['muted'] ?? false,
         );
-        break;
+        return true;
 
       case VhPlyrEventType.fullscreenChange:
         _state = _state.copyWith(
           isFullscreen: event.data['isFullscreen'] ?? false,
         );
-        break;
+        return true;
 
       case VhPlyrEventType.qualityChange:
         _state = _state.copyWith(quality: event.data['quality'] ?? -1);
-        break;
+        return true;
 
       case VhPlyrEventType.error:
         _errorController.add(event.data['message'] ?? 'Unknown error');
-        break;
+        return false; // Error is handled via stream
 
       case VhPlyrEventType.manifestParsed:
         final qualitiesData = event.data['qualities'] as List? ?? [];
@@ -187,10 +211,10 @@ class VhPlyrController extends ChangeNotifier {
             .map((q) => VhPlyrQuality.fromJson(q))
             .toList();
         _state = _state.copyWith(isLive: event.data['isLive'] ?? false);
-        break;
+        return true;
 
       default:
-        break;
+        return false;
     }
   }
 

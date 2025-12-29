@@ -22,6 +22,13 @@
     let isReady = false;
     let currentQuality = -1;
 
+    // Debug configuration
+    const config = {
+        debug: false, // Set to true to enable console logging
+        // Events to ignore in console (even when debug is true)
+        ignoreEvents: ['onTimeUpdate', 'onProgress']
+    };
+
     // Callback handler for mobile WebView
     const callbacks = {
         onReady: null,
@@ -54,8 +61,10 @@
             window.VhPlyrHandler.postMessage(JSON.stringify(payload));
         }
         
-        // Console log for debugging
-        console.log('[VhPlyr]', eventName, data);
+        // Console log for debugging (with filter)
+        if (config.debug && !config.ignoreEvents.includes(eventName)) {
+            console.log('[VhPlyr]', eventName, data);
+        }
         
         // Call registered callback
         if (callbacks[eventName] && typeof callbacks[eventName] === 'function') {
@@ -460,6 +469,22 @@
 
         getVersion: function() {
             return '1.0.0';
+        },
+
+        // ============ Debug ============
+
+        setDebug: function (enabled) {
+            config.debug = enabled === true || enabled === 'true';
+        },
+
+        setIgnoreEvents: function (events) {
+            if (Array.isArray(events)) {
+                config.ignoreEvents = events;
+            }
+        },
+
+        getConfig: function () {
+            return JSON.stringify(config);
         }
     };
 

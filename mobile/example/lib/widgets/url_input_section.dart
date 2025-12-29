@@ -70,6 +70,7 @@ class UrlInputSection extends StatelessWidget {
                   onPressed: onLoad,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF6B35),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 14,
@@ -78,7 +79,6 @@ class UrlInputSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  icon: const Icon(Icons.arrow_forward, size: 18),
                   label: const Text('Tải'),
                 ),
               ],

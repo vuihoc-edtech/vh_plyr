@@ -15,7 +15,8 @@
 
 <body>
     <div id="player-container">
-        <video id="player" playsinline controls crossorigin>
+        <!-- poster="" prevents Android WebView CORS error with default_video_poster -->
+        <video id="player" playsinline controls crossorigin poster="">
             <!-- HLS source will be loaded dynamically -->
         </video>
     </div>

@@ -1,12 +1,19 @@
 import 'package:example/widgets/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/vh_plyr.dart';
 import 'package:mobile/vh_plyr_controller.dart';
 import 'package:mobile/vh_plyr_state.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'widgets/widgets.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Disable InAppWebView debug logging
+  PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
+  
   runApp(const VhPlyrDemoApp());
 }
 
@@ -32,11 +39,11 @@ class DemoPage extends StatefulWidget {
 }
 
 class _DemoPageState extends State<DemoPage> {
-  final VhPlyrController _controller = VhPlyrController();
-  final TextEditingController _urlController = TextEditingController(
+  final _controller = VhPlyrController();
+  final _urlController = TextEditingController(
     text: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
   );
-  final List<String> _logs = ['[VhPlyr Demo] Ready'];
+  final _logs = ['[VhPlyr Demo] Ready'];
 
   @override
   void initState() {
@@ -185,8 +192,10 @@ class _DemoPageState extends State<DemoPage> {
         child: VhPlyr(
           controller: _controller,
           options: VhPlyrOptions(
+            useLocalAssets: kDebugMode,
             initialSource: _urlController.text,
             autoplay: false,
+            debug: true,
           ),
           onReady: () {
             _log('🎬 Player initialized', isInfo: true);
