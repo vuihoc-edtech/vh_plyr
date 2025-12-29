@@ -147,28 +147,21 @@ class _LiveLessonCardState extends State<LiveLessonCard> {
 
               // Tap to enter full mode overlay
               Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _isReady ? _openFullMode : null,
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.4),
-                          ],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.play_circle_filled,
-                        color: Colors.white70,
-                        size: 48,
+                child: GestureDetector(
+                  onTap: _isReady ? _openFullMode : null,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.4),
+                        ],
                       ),
                     ),
+                    child: Container(),
                   ),
                 ),
               ),
