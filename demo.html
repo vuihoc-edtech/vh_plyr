@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VhPlyr Demo - Lớp học trực tuyến</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A28;
+            --secondary: #2D3047;
+            --background: #0F0F1A;
+            --surface: #1A1A2E;
+            --surface-light: #252540;
+            --text: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --success: #10B981;
+            --error: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), #FF8F6B);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .class-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .live-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #EF4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Main Content */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* Player Section */
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .player-container {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            position: relative;
+        }
+
+        .player-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* URL Input */
+        .url-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .url-section label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .url-input {
+            flex: 1;
+            background: var(--surface-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary);
+        }
+
+        /* Controls */
+        .controls-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .controls-section h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: var(--surface-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .control-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* State Display */
+        .state-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .state-section h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .state-item {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .state-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .state-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chat-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-section h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .participant-count {
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            min-height: 200px;
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Log Output */
+        .log-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 200px;
+        }
+
+        .log-section h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .log-output {
+            background: #0a0a12;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            max-height: 120px;
+            overflow-y: auto;
+            color: #10B981;
+        }
+
+        .log-output .error {
+            color: #EF4444;
+        }
+
+        .log-output .info {
+            color: #60A5FA;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">▶</div>
+            <span>VhPlyr Demo</span>
+        </div>
+        <div class="class-info">
+            <div class="live-badge">LIVE</div>
+            <span style="color: var(--text-muted); font-size: 14px;">Lớp học Demo</span>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="player-section">
+            <!-- Player -->
+            <div class="player-container">
+                <iframe id="player-iframe"
+                    src="https://vuihoc-edtech.github.io/vh_plyr/?url=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+                    allowfullscreen allow="autoplay; fullscreen; picture-in-picture">
+                </iframe>
+            </div>
+
+            <!-- URL Input -->
+            <div class="url-section">
+                <label>Stream URL (HLS m3u8)</label>
+                <div class="url-input-group">
+                    <input type="text" id="url-input" class="url-input"
+                        value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" placeholder="Nhập URL stream...">
+                    <button class="btn" onclick="loadUrl()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                        Tải
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-section">
+                <h3>Điều khiển Player</h3>
+                <div class="controls-grid">
+                    <button class="control-btn" onclick="sendCommand('play')">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Play
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('pause')">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
+                        Pause
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('stop')">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="6" width="12" height="12" />
+                        </svg>
+                        Stop
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('rewind', [10])">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
+                        </svg>
+                        -10s
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('forward', [10])">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" />
+                        </svg>
+                        +10s
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('toggleFullscreen')">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                        </svg>
+                        Fullscreen
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('setVolume', [0.5])">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 9v6h4l5 5V4L7 9H3z" />
+                        </svg>
+                        Vol 50%
+                    </button>
+                    <button class="control-btn" onclick="sendCommand('setMuted', [true])">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                        </svg>
+                        Mute
+                    </button>
+                    <button class="control-btn" onclick="getState()">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z" />
+                        </svg>
+                        Get State
+                    </button>
+                </div>
+            </div>
+
+            <!-- State Display -->
+            <div class="state-section">
+                <h3>Trạng thái Player</h3>
+                <div class="state-grid">
+                    <div class="state-item">
+                        <div class="state-value" id="state-time">0:00</div>
+                        <div class="state-label">Thời gian</div>
+                    </div>
+                    <div class="state-item">
+                        <div class="state-value" id="state-duration">0:00</div>
+                        <div class="state-label">Tổng thời gian</div>
+                    </div>
+                    <div class="state-item">
+                        <div class="state-value" id="state-status">---</div>
+                        <div class="state-label">Trạng thái</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Log -->
+            <div class="log-section">
+                <h3>
+                    Console Log
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;"
+                        onclick="clearLog()">Clear</button>
+                </h3>
+                <div class="log-output" id="log-output">
+                    <div class="info">[VhPlyr Demo] Ready</div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sidebar">
+            <div class="chat-section">
+                <h3>
+                    Chat
+                    <span class="participant-count">128</span>
+                </h3>
+                <div class="chat-messages">
+                    💬 Chat demo - Tính năng mô phỏng
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        const playerIframe = document.getElementById('player-iframe');
+        const logOutput = document.getElementById('log-output');
+        let requestId = 0;
+
+        // Send command to player via postMessage
+        function sendCommand(action, args = []) {
+            requestId++;
+            const message = {
+                action: action,
+                args: args,
+                requestId: requestId
+            };
+
+            log(`Sending: ${action}(${args.join(', ')})`);
+            playerIframe.contentWindow.postMessage(message, '*');
+        }
+
+        // Load new URL
+        function loadUrl() {
+            const url = document.getElementById('url-input').value.trim();
+            if (url) {
+                log(`Loading: ${url.substring(0, 50)}...`, 'info');
+                playerIframe.src = `https://vuihoc-edtech.github.io/vh_plyr/?url=${encodeURIComponent(url)}`;
+            }
+        }
+
+        // Get player state
+        function getState() {
+            sendCommand('getState');
+        }
+
+        // Listen for messages from player
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'VhPlyrResponse') {
+                log(`Response [${event.data.action}]: ${JSON.stringify(event.data.result).substring(0, 100)}`);
+
+                // Update state display if getState response
+                if (event.data.action === 'getState' && event.data.result) {
+                    try {
+                        const state = JSON.parse(event.data.result);
+                        updateStateDisplay(state);
+                    } catch (e) { }
+                }
+            }
+        });
+
+        // Update state display
+        function updateStateDisplay(state) {
+            document.getElementById('state-time').textContent = formatTime(state.currentTime || 0);
+            document.getElementById('state-duration').textContent = formatTime(state.duration || 0);
+            document.getElementById('state-status').textContent =
+                state.isPlaying ? '▶️ Playing' :
+                    state.isPaused ? '⏸️ Paused' :
+                        state.isEnded ? '⏹️ Ended' : '---';
+        }
+
+        // Format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padLeft(2, '0')}`;
+        }
+
+        String.prototype.padLeft = function (len, char) {
+            return (char.repeat(len) + this).slice(-len);
+        };
+
+        // Log helper
+        function log(message, type = '') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logOutput.appendChild(div);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function clearLog() {
+            logOutput.innerHTML = '<div class="info">[VhPlyr Demo] Log cleared</div>';
+        }
+
+        // Auto-refresh state every 2 seconds
+        setInterval(() => {
+            sendCommand('getState');
+        }, 2000);
+    </script>
+</body>
+
+</html>
