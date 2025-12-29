@@ -116,6 +116,9 @@ body {
     transition: all 0.2s ease;
 }
 
+.plyr__controls .plyr__control[data-plyr="play"] {
+    margin-right: 10px;
+}
 .plyr__controls .plyr__control:hover {
     background: rgba(255, 107, 53, 0.2);
 }
