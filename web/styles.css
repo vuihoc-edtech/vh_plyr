@@ -1,0 +1,255 @@
+/**
+ * VhPlyr Custom Styles
+ * Customized theme for VUIHOC
+ */
+
+:root {
+    /* VUIHOC Brand Colors */
+    --vhplyr-primary: #FF6B35;
+    --vhplyr-primary-dark: #E55A28;
+    --vhplyr-secondary: #2D3047;
+    --vhplyr-accent: #FFC857;
+    --vhplyr-background: #1A1A2E;
+    --vhplyr-text: #FFFFFF;
+    --vhplyr-text-muted: rgba(255, 255, 255, 0.7);
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--vhplyr-background);
+    overflow: hidden;
+}
+
+#player-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    aspect-ratio: 16 / 9;
+    max-height: 100vh;
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+}
+
+/* Plyr customization */
+.plyr {
+    --plyr-color-main: var(--vhplyr-primary);
+    --plyr-video-background: #000;
+    --plyr-menu-background: rgba(45, 48, 71, 0.95);
+    --plyr-menu-color: var(--vhplyr-text);
+    --plyr-menu-border-color: rgba(255, 255, 255, 0.1);
+    --plyr-control-icon-size: 18px;
+    --plyr-control-spacing: 10px;
+    --plyr-tooltip-background: var(--vhplyr-secondary);
+    --plyr-tooltip-color: var(--vhplyr-text);
+    --plyr-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --plyr-font-size-base: 14px;
+    --plyr-font-weight-regular: 400;
+    --plyr-font-weight-bold: 600;
+
+    width: 100%;
+    height: 100%;
+}
+
+/* Control bar styling */
+.plyr__controls {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) !important;
+    padding: 10px 15px !important;
+}
+
+/* Progress bar */
+.plyr__progress {
+    left: 0;
+    right: 0;
+}
+
+.plyr__progress input[type="range"] {
+    color: var(--vhplyr-primary);
+}
+
+.plyr__progress__buffer {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Volume slider */
+.plyr__volume input[type="range"] {
+    color: var(--vhplyr-primary);
+}
+
+/* Big play button */
+.plyr__control--overlaid {
+    background: var(--vhplyr-primary) !important;
+    border: 0;
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+    transition: all 0.3s ease;
+}
+
+.plyr__control--overlaid:hover {
+    background: var(--vhplyr-primary-dark) !important;
+    transform: scale(1.1);
+}
+
+.plyr__control--overlaid svg {
+    left: 2px;
+}
+
+/* Control buttons */
+.plyr__controls .plyr__control {
+    transition: all 0.2s ease;
+}
+
+.plyr__controls .plyr__control:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.plyr__controls .plyr__control[aria-pressed="true"] {
+    background: var(--vhplyr-primary);
+}
+
+/* Menu styling */
+.plyr__menu__container {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.plyr__menu__container .plyr__control[role="menuitemradio"]:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
+    background: var(--vhplyr-primary);
+}
+
+/* Time display */
+.plyr__time {
+    font-weight: 500;
+}
+
+/* Tooltip */
+.plyr__tooltip {
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Loading spinner */
+.plyr__poster {
+    background-color: var(--vhplyr-background);
+}
+
+/* Fullscreen mode */
+.plyr--fullscreen-enabled .plyr__control[data-plyr="fullscreen"] {
+    display: flex;
+}
+
+/* Live indicator */
+.plyr__live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.plyr__live-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .plyr__controls {
+        padding: 8px 10px !important;
+    }
+
+    .plyr__control--overlaid {
+        width: 50px;
+        height: 50px;
+    }
+
+    .plyr__control--overlaid svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .plyr__volume {
+        display: none !important;
+    }
+}
+
+/* Error state */
+.plyr--error .plyr__poster {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plyr--error .plyr__poster::after {
+    content: 'Đã xảy ra lỗi khi tải video';
+    color: var(--vhplyr-text);
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Quality badge */
+.plyr__badge {
+    background: var(--vhplyr-primary) !important;
+    color: white !important;
+    font-weight: 600;
+    border-radius: 3px;
+}
+
+/* Captions */
+.plyr__captions {
+    font-size: 16px !important;
+}
+
+.plyr__caption {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+/* Hide download button if present */
+.plyr__controls [data-plyr="download"] {
+    display: none !important;
+}
