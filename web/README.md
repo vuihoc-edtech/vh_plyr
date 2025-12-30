@@ -26,7 +26,7 @@ Sử dụng SDK `client-sdk.js` để nhúng và điều khiển player dễ dà
 <!-- 1. Nhúng Iframe -->
 <iframe 
     id="vh-player"
-    src="https://player.vuihoc.vn/"
+    src="https://player.vuihoc.vn/?url=https://example.com/video.m3u8"
     width="100%" height="480" frameborder="0" allowfullscreen>
 </iframe>
 
