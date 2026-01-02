@@ -194,88 +194,120 @@
         </aside>
     </main>
 
+    <!-- Client SDK -->
+    <script src="client-sdk.js"></script>
     <script>
-            /**
-             * VhPlyr Demo Controller
-             */
+        /**
+         * VhPlyr Demo Controller (using VhPlyrClient SDK)
+         */
             (function () {
                 'use strict';
 
-                const $ = (sel) => document.getElementById(sel);
-                const elements = {
-                    playerIframe: $('player-iframe'),
-                    urlInput: $('url-input'),
-                    btnLoad: $('btn-load'),
-                    btnClearLog: $('btn-clear-log'),
-                    logOutput: $('log-output'),
-                    stateTime: $('state-time'),
-                    stateDuration: $('state-duration'),
-                    stateStatus: $('state-status'),
+            const PLAYER_ORIGIN = 'https://vuihoc-edtech.github.io';
+            const $ = (sel) => document.getElementById(sel);
+
+            const elements = {
+                playerIframe: $('player-iframe'),
+                urlInput: $('url-input'),
+                btnLoad: $('btn-load'),
+                btnClearLog: $('btn-clear-log'),
+                logOutput: $('log-output'),
+                stateTime: $('state-time'),
+                stateDuration: $('state-duration'),
+                stateStatus: $('state-status'),
             };
 
-                let requestId = 0;
+            // Initialize SDK
+            const player = new VhPlyrClient(elements.playerIframe, PLAYER_ORIGIN);
 
-                // Player API
-                const Player = {
-                    send(action, args = []) {
-                        elements.playerIframe.contentWindow.postMessage({ action, args, requestId: ++requestId }, '*');
-                        Log.add(`→ ${action}(${args.join(', ')})`);
-                    },
-                    load(url) {
-                        if (!url) return;
-                        Log.add(`Loading: ${url.substring(0, 40)}...`, 'info');
-                        elements.playerIframe.src = `https://vuihoc-edtech.github.io/vh_plyr/?url=${encodeURIComponent(url)}`;
+            // Logger
+            const Log = {
+                add(msg, type = '') {
+                    const div = document.createElement('div');
+                    div.className = type === 'info' ? 'text-blue-400' : type === 'error' ? 'text-red-400' : '';
+                    div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                    elements.logOutput.appendChild(div);
+                    elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
+                },
+                clear() {
+                    elements.logOutput.innerHTML = '<div class="text-blue-400">[VhPlyr] Cleared</div>';
+                }
+            };
+
+            // UI Helpers
+            const UI = {
+                formatTime(s) {
+                    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
+                },
+                updateState(state) {
+                    elements.stateTime.textContent = this.formatTime(state.currentTime || 0);
+                    elements.stateDuration.textContent = this.formatTime(state.duration || 0);
+                    elements.stateStatus.textContent = state.isPlaying ? '▶️' : state.isPaused ? '⏸️' : '---';
+                }
+            };
+
+            // SDK Action mapping (data-action -> SDK method)
+            const actionMap = {
+                play: () => player.play(),
+                pause: () => player.pause(),
+                stop: () => player.stop(),
+                rewind: (args) => player.rewind(args[0]),
+                forward: (args) => player.forward(args[0]),
+                toggleFullscreen: () => player.toggleFullscreen(),
+                setVolume: (args) => player.setVolume(args[0]),
+                setMuted: (args) => player.setMuted(args[0]),
+                getState: () => player.getState(),
+            };
+
+            // Control button events
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const action = btn.dataset.action;
+                    const args = btn.dataset.args ? JSON.parse(btn.dataset.args) : [];
+
+                    Log.add(`→ ${action}(${args.join(', ')})`);
+
+                    try {
+                        const handler = actionMap[action];
+                        if (handler) {
+                            const result = await handler(args);
+                            if (result !== undefined) {
+                                Log.add(`← [${action}] ${JSON.stringify(result).substring(0, 60)}`);
+                                if (action === 'getState') UI.updateState(result);
+                            }
+                        }
+                    } catch (err) {
+                        Log.add(`✗ ${action} error: ${err}`, 'error');
                     }
-                };
-
-                // Logger
-                const Log = {
-                    add(msg, type = '') {
-                        const div = document.createElement('div');
-                        div.className = type === 'info' ? 'text-blue-400' : type === 'error' ? 'text-red-400' : '';
-                        div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-                        elements.logOutput.appendChild(div);
-                        elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
-                    },
-                    clear() {
-                        elements.logOutput.innerHTML = '<div class="text-blue-400">[VhPlyr] Cleared</div>';
-                    }
-                };
-
-                // UI
-                const UI = {
-                    formatTime(s) {
-                        return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
-                    },
-                    updateState(state) {
-                        elements.stateTime.textContent = this.formatTime(state.currentTime || 0);
-                        elements.stateDuration.textContent = this.formatTime(state.duration || 0);
-                        elements.stateStatus.textContent = state.isPlaying ? '▶️' : state.isPaused ? '⏸️' : '---';
-                    }
-                };
-
-                // Events
-                document.querySelectorAll('[data-action]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        Player.send(btn.dataset.action, btn.dataset.args ? JSON.parse(btn.dataset.args) : []);
-                    });
                 });
+            });
 
-                elements.btnLoad.addEventListener('click', () => Player.load(elements.urlInput.value.trim()));
-                elements.btnClearLog.addEventListener('click', Log.clear);
-                elements.urlInput.addEventListener('keypress', (e) => e.key === 'Enter' && Player.load(elements.urlInput.value.trim()));
+            // Load URL
+            function loadUrl(url) {
+                if (!url) return;
+                Log.add(`Loading: ${url.substring(0, 40)}...`, 'info');
+                elements.playerIframe.src = `${PLAYER_ORIGIN}/vh_plyr/?url=${encodeURIComponent(url)}`;
+            }
 
-                window.addEventListener('message', (e) => {
-                    if (e.data?.type !== 'VhPlyrResponse') return;
-                    Log.add(`← [${e.data.action}] ${JSON.stringify(e.data.result).substring(0, 60)}`);
-                    if (e.data.action === 'getState' && e.data.result) {
-                        try { UI.updateState(typeof e.data.result === 'string' ? JSON.parse(e.data.result) : e.data.result); } catch { }
-                    }
-                });
+            elements.btnLoad.addEventListener('click', () => loadUrl(elements.urlInput.value.trim()));
+            elements.btnClearLog.addEventListener('click', Log.clear);
+            elements.urlInput.addEventListener('keypress', (e) => e.key === 'Enter' && loadUrl(elements.urlInput.value.trim()));
 
-                // Auto refresh state
-                setInterval(() => Player.send('getState'), 2000);
-            })();
+            // Listen to SDK events
+            player.on('*', (eventName, data) => {
+                Log.add(`⚡ ${eventName}: ${JSON.stringify(data || {}).substring(0, 50)}`);
+            });
+
+            // Auto refresh state every 2s
+            setInterval(async () => {
+                try {
+                    const state = await player.getState();
+                    UI.updateState(state);
+                } catch { /* ignore timeout during loading */ }
+            }, 2000);
+
+            Log.add('VhPlyrClient SDK initialized', 'info');
+        })();
     </script>
 </body>
 </html>
