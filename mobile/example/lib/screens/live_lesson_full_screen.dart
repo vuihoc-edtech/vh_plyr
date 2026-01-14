@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 /// Full screen live lesson viewing with sound and time sync
 ///

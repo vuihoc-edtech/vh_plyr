@@ -6,7 +6,7 @@
 /// ## Usage
 ///
 /// ```dart
-/// import 'package:mobile/vh_plyr.dart';
+/// import 'package:plyr/vh_plyr.dart';
 ///
 /// // Create controller
 /// final controller = VhPlyrController();

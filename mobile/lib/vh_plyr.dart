@@ -151,7 +151,7 @@ class _VhPlyrState extends State<VhPlyr> {
               ? null // Will use initialData instead
               : URLRequest(url: WebUri(widget.options.buildRemoteUrl())),
           initialFile: useLocalAssets
-              ? 'packages/mobile/assets/player/index.html'
+              ? 'packages/plyr/assets/player/index.html'
               : null,
           initialSettings: InAppWebViewSettings(
             mediaPlaybackRequiresUserGesture: false,

@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # VhPlyr mobile package
-  mobile:
+  plyr:
     path: ../
 
   # The following adds the Cupertino Icons font to your application.

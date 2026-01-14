@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/vh_plyr_controller.dart';
+import 'package:plyr/vh_plyr_controller.dart';
 import 'common.dart';
 
 /// Player state display section

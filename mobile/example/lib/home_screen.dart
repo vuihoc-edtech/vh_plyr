@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 import 'screens/weekly_calendar_tab.dart';
 import 'screens/course_list_tab.dart';
 
 /// Home screen with 2 tabs demonstrating multiple preview players
 ///
-/// This simulates the vuihoc.vn mobile app where:
+/// This simulates the vuihoc.vn plyr app where:
 /// - Tab 0: Weekly calendar with live lesson preview
 /// - Tab 1: Course list with live lesson preview
 ///

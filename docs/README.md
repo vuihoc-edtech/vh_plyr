@@ -12,7 +12,7 @@ VhPlayer/
 │   └── styles.css         # Custom VUIHOC styling
 ├── mobile/                 # Flutter package
 │   └── lib/
-│       ├── mobile.dart           # Barrel export
+│       ├── plyr.dart           # Barrel export
 │       ├── vh_plyr.dart          # Widget + Controls
 │       ├── vh_plyr_controller.dart  # Controller
 │       └── vh_plyr_state.dart    # State models
@@ -43,7 +43,7 @@ player.contentWindow.postMessage({ action: 'seek', args: [30] }, '*');
 ### Mobile Integration (Flutter)
 
 ```dart
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 final controller = VhPlyrController();
 

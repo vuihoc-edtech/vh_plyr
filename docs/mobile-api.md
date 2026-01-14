@@ -6,14 +6,14 @@ Flutter package API cho điều khiển player qua WebView.
 
 ```yaml
 dependencies:
-  mobile:
+  plyr:
     path: ../mobile
 ```
 
 ## Quick Start
 
 ```dart
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 class LivePlayerPage extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 import '../screens/live_lesson_full_screen.dart';
 

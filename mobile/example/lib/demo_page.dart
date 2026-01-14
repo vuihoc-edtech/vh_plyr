@@ -1,7 +1,7 @@
 import 'package:example/widgets/common.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/mobile.dart';
+import 'package:plyr/plyr.dart';
 
 import 'widgets/controls_section.dart';
 import 'widgets/log_section.dart';
