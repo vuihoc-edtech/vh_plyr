@@ -36,9 +36,10 @@
             // Get URL from query params or postMessage
             const urlParams = new URLSearchParams(window.location.search);
             const streamUrl = urlParams.get('url') || urlParams.get('source');
-
+            const autoplay = urlParams.get('autoplay') === 'true';
+            const controls = urlParams.get('controls') === 'true';
             if (streamUrl) {
-                VhPlyr.loadSource(streamUrl);
+                VhPlyr.loadSource(streamUrl, autoplay, controls);
             }
         });
 

@@ -2,6 +2,7 @@ library;
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -162,7 +163,7 @@ class _VhPlyrState extends State<VhPlyr> {
             disableHorizontalScroll: true,
             disableVerticalScroll: true,
             allowsBackForwardNavigationGestures: false,
-            useShouldOverrideUrlLoading: true,
+            // useShouldOverrideUrlLoading: true,
             useHybridComposition: true,
             // iOS specific
             allowsLinkPreview: false,
@@ -172,6 +173,7 @@ class _VhPlyrState extends State<VhPlyr> {
             loadWithOverviewMode: true,
             builtInZoomControls: false,
             displayZoomControls: false,
+            isInspectable: kDebugMode,
           ),
           onConsoleMessage: (controller, consoleMessage) {
             debugPrint('[VhPlyr WebView] $consoleMessage');
@@ -211,10 +213,10 @@ class _VhPlyrState extends State<VhPlyr> {
               _isLoading = false;
             });
           },
-          shouldOverrideUrlLoading: (controller, action) async {
-            // Block external navigation
-            return NavigationActionPolicy.CANCEL;
-          },
+          // shouldOverrideUrlLoading: (controller, action) async {
+          //   // Block external navigation
+          //   return NavigationActionPolicy.CANCEL;
+          // },
         ),
 
         // Loading overlay

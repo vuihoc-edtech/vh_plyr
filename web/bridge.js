@@ -308,7 +308,7 @@
 
         // ============ Source ============
 
-        loadSource: function(url, autoplay) {
+        loadSource: function(url, autoplay, controls) {
             const video = document.getElementById('player');
             if (!video) {
                 emitEvent('onError', { message: 'Video element not found' });
@@ -336,20 +336,20 @@
                     
                     hls.on(Hls.Events.MANIFEST_PARSED, function() {
                         // Initialize Plyr after HLS is ready
-                        initPlyr(video, autoplay);
+                        initPlyr(video, autoplay, controls);
                         updateQualityOptions();
                     });
                 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                     // Native HLS support (Safari)
                     video.src = url;
-                    initPlyr(video, autoplay);
+                    initPlyr(video, autoplay, controls);
                 } else {
                     emitEvent('onError', { message: 'HLS not supported' });
                 }
             } else {
                 // Direct video source (MP4, WebM, etc.)
                 video.src = url;
-                initPlyr(video, autoplay);
+                initPlyr(video, autoplay, controls);
             }
         },
 
@@ -489,13 +489,13 @@
     };
 
     // Initialize Plyr player
-    function initPlyr(video, autoplay) {
+    function initPlyr(video, autoplay, controls) {
         if (plyr) {
             plyr.destroy();
         }
 
         plyr = new Plyr(video, {
-            controls: [
+            controls: controls ? [
                 'play-large',
                 'play',
                 'progress',
@@ -506,7 +506,7 @@
                 'settings',
                 'pip',
                 'fullscreen'
-            ],
+            ] : [],
             settings: ['quality', 'speed'],
             quality: {
                 default: 720,
