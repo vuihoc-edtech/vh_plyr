@@ -38,8 +38,9 @@
             const streamUrl = urlParams.get('url') || urlParams.get('source');
             const autoplay = urlParams.get('autoplay') === 'true';
             const controls = urlParams.get('controls') === 'true';
+            const fullscreen = urlParams.get('fullscreen') === 'true';
             if (streamUrl) {
-                VhPlyr.loadSource(streamUrl, autoplay, controls);
+                VhPlyr.loadSource(streamUrl, autoplay, controls, fullscreen);
             }
         });
 

@@ -94,6 +94,15 @@ class _VhPlyrState extends State<VhPlyr> {
     if (mounted) {
       setState(() => _isLoading = false);
       widget.onReady?.call();
+      if (widget.options.autoplay == true) {
+        widget.controller.play();
+      }
+      if (widget.options.muted) {
+        widget.controller.setMuted(true);
+      } else {
+        widget.controller.setMuted(false);
+        widget.controller.setVolume(widget.options.volume);
+      }
     }
   }
 
@@ -174,6 +183,7 @@ class _VhPlyrState extends State<VhPlyr> {
             builtInZoomControls: false,
             displayZoomControls: false,
             isInspectable: kDebugMode,
+            isElementFullscreenEnabled: false,
           ),
           onConsoleMessage: (controller, consoleMessage) {
             debugPrint('[VhPlyr WebView] $consoleMessage');

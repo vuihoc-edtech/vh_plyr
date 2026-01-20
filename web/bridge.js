@@ -308,7 +308,7 @@
 
         // ============ Source ============
 
-        loadSource: function(url, autoplay, controls) {
+        loadSource: function(url, autoplay, controls, fullscreen) {
             const video = document.getElementById('player');
             if (!video) {
                 emitEvent('onError', { message: 'Video element not found' });
@@ -336,20 +336,20 @@
                     
                     hls.on(Hls.Events.MANIFEST_PARSED, function() {
                         // Initialize Plyr after HLS is ready
-                        initPlyr(video, autoplay, controls);
+                        initPlyr(video, autoplay, controls, fullscreen);
                         updateQualityOptions();
                     });
                 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                     // Native HLS support (Safari)
                     video.src = url;
-                    initPlyr(video, autoplay, controls);
+                    initPlyr(video, autoplay, controls, fullscreen);
                 } else {
                     emitEvent('onError', { message: 'HLS not supported' });
                 }
             } else {
                 // Direct video source (MP4, WebM, etc.)
                 video.src = url;
-                initPlyr(video, autoplay, controls);
+                initPlyr(video, autoplay, controls, fullscreen);
             }
         },
 
@@ -489,7 +489,7 @@
     };
 
     // Initialize Plyr player
-    function initPlyr(video, autoplay, controls) {
+    function initPlyr(video, autoplay, controls, fullscreen) {
         if (plyr) {
             plyr.destroy();
         }
@@ -529,9 +529,9 @@
                 global: false
             },
             fullscreen: {
-                enabled: true,
-                fallback: true,
-                iosNative: true
+                enabled: fullscreen,
+                fallback: fullscreen,
+                iosNative: fullscreen
             },
             autoplay: autoplay === true || autoplay === 'true',
             invertTime: false,
